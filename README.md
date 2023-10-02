@@ -18,6 +18,8 @@ npm install
 
 NOTE: Pour valider une commande, il faut appuyer sur la touche "Entrée" du clavier.
 
+Il faut également copier le fichier .env.local.example en .env.local et remplir le fichier avec les bonnes informations. Merci de demander aux collègues pour les informations à remplir.
+
 ## Lancer l'application
 Dans ce terminal, il faut taper la commande suivante :
 
