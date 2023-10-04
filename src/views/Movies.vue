@@ -1,6 +1,5 @@
 <template>
     <v-container>
-        <h1>Les films les mieux notés</h1>
         <div v-if="loading">Chargement en cours...</div>
         <div>
         <v-row>
