@@ -46,7 +46,7 @@ const couleurNoteFilm = computed(() => {
             <v-img :src="urlBaseImage + film.poster_path" alt="Affiche du film" cover>
             </v-img>
             <div class="actions-carte">
-                <div class="pa-2 bg-white rounded-circle d-inline-block">
+                <div class="pa-1 bg-white rounded-circle d-inline-block">
                     <v-progress-circular :model-value="noteFilm" :color="couleurNoteFilm">
                         {{ noteFilm }}
                     </v-progress-circular>

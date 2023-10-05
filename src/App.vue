@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <v-app>
+  <v-app theme="dark">
     <!-- La barre de navigation, qui apparaît en haut de l'écran-->
     <v-app-bar color="primary">
       <v-app-bar-title>
