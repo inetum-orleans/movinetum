@@ -3,10 +3,11 @@
 import { Movie } from 'tmdb-ts';
 import { computed } from 'vue';
 
-// La largeur d'une image de film, en pixels
-// Cette valeur ne sort pas de nulle part. Elle vient d'une des largeurs possibles de "poster_sizes"
+// Les dimensions d'une image de film, en pixels
+// Ces valeur ne sort pas de nulle part. Elle vient d'une des largeurs possibles de "poster_sizes"
 // issue de la requête https://api.themoviedb.org/3/configuration (documentation : https://developer.themoviedb.org/reference/configuration-details)
 const largeurImagePixels = 154
+const hauteurImagePixels = 231
 // L'URL de base des images de films
 const urlBaseImage = 'https://image.tmdb.org/t/p/w' + largeurImagePixels
 
@@ -43,7 +44,7 @@ const couleurNoteFilm = computed(() => {
             :to="{ name: 'DetailFilm', params: { id: film.id }}"
             class="carte-film flex-column h-100"
             >
-            <v-img :src="urlBaseImage + film.poster_path" alt="Affiche du film" cover>
+            <v-img :src="urlBaseImage + film.poster_path" alt="Affiche du film" :height="hauteurImagePixels" cover>
             </v-img>
             <div class="actions-carte">
                 <div class="pa-1 bg-white rounded-circle d-inline-block">

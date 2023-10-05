@@ -1,14 +1,33 @@
 <script lang="ts" setup>
   // Le composant principal de l'application
+  
+  import { ref } from 'vue';
+  import { useRouter } from 'vue-router'
+
+  const router = useRouter()
+  const recherche = ref('')
+
+  function search() {
+    router.push({ name: 'Films', params: { page: 1 }, query: { recherche: recherche.value } })
+  }
 </script>
 
 <template>
   <v-app theme="dark">
     <!-- La barre de navigation, qui apparaît en haut de l'écran-->
-    <v-app-bar color="primary">
-      <v-app-bar-title>
-        Movinetum
-      </v-app-bar-title>
+    <v-app-bar>
+      <template v-slot:prepend>
+        <v-btn flat size="large" to="/" @click="recherche = ''">Movinetum</v-btn>
+      </template>
+      <v-text-field
+        label="Rechercher un film"
+        append-inner-icon="mdi-magnify"
+        single-line
+        hide-details
+        v-model="recherche"
+        @click:append-inner="search"
+        @keyup.enter="search"
+      />
     </v-app-bar>
     <v-main>
       <!--

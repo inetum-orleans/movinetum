@@ -20,6 +20,9 @@ const routeur = useRouter()
 // On récupère le client TMDB depuis le conteneur d'injection de dépendances (voir la ligne "app.provide" dans src/main.ts)
 const tmdb = inject(symboleTmdb)!
 
+// On récupère le texte à rechercher depuis la route, si jamais il y en a un
+const recherche = computed(() => route.query.recherche as string)
+
 // Indique si la page est en cours de chargement.
 const chargement = ref(true)
 // Le numéro de page actuel, récupéré depuis la route
@@ -30,21 +33,34 @@ const nbPagesTotal = ref(1)
 const films = ref<Movie[]>([])
 
 // La fonction watch permet de surveiller les changements de la variable page
-watch(page, async () => {
+watch(() => [page.value, recherche.value], async () => {
     // Lorsque l'on change de page, on déclenche cette fonction de mise à jour.
     // Etant donné que j'ai marqué immediate:true, cette fonction est aussi appelée immédiatement au premier chargement.
     chargement.value = true // Affiche le message de chargement
 
-    // On récupère la liste des films les mieux notés depuis l'API TMDB
-    const resultats = await tmdb.movies.topRated({
-        page: page.value,
-        language: 'fr-FR',
-        region: 'FR'
-    })
+    if (recherche.value) {
+        // On récupère la liste des films les mieux notés depuis l'API TMDB
+        const resultats = await tmdb.search.movies({
+            language: 'fr-FR',
+            query: recherche.value,
+            page: page.value,
+        })
 
-    // On initialise les valeurs de la liste des films et du nombre total de pages
-    films.value = resultats.results
-    nbPagesTotal.value = resultats.total_pages
+        // On initialise les valeurs de la liste des films et du nombre total de pages
+        films.value = resultats.results
+        nbPagesTotal.value = resultats.total_pages
+    } else {
+        // On récupère la liste des films les mieux notés depuis l'API TMDB
+        const resultats = await tmdb.movies.topRated({
+            page: page.value,
+            language: 'fr-FR',
+            region: 'FR'
+        })
+
+        // On initialise les valeurs de la liste des films et du nombre total de pages
+        films.value = resultats.results
+        nbPagesTotal.value = resultats.total_pages
+    }
 
     chargement.value = false // Masque le message de chargement
 }, { immediate: true })
@@ -54,7 +70,7 @@ watch(page, async () => {
  * Cette fonction est appelée lorsqu'on change de page via le composant de pagination
  */
 function changementPage(numPage: number) {
-    routeur.push({ name: 'Films', params: { page: numPage } })
+    routeur.push({ name: 'Films', params: { page: numPage }, query: { recherche: recherche.value }})
 }
 </script>
 
