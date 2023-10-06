@@ -17,13 +17,22 @@
     <!-- La barre de navigation, qui apparaît en haut de l'écran-->
     <v-app-bar>
       <template v-slot:prepend>
-        <v-btn flat size="large" to="/" @click="recherche = ''">Movinetum</v-btn>
+        <router-link to="/" class="h-100 d-flex justify-center">
+          <v-img
+            width="150"
+            class="mr-2"
+            @click="recherche = ''"
+            alt="Logo Movinetum"
+            src="/logo_movinetum.svg"
+          />
+        </router-link>
       </template>
       <v-text-field
         label="Rechercher un film"
         append-inner-icon="mdi-magnify"
         single-line
         hide-details
+        class="ma-2"
         v-model="recherche"
         @click:append-inner="search"
         @keyup.enter="search"
