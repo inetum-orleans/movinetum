@@ -18,7 +18,7 @@ const props = defineProps<{
 
 // On calcule la date de sortie du film, en format français (ex: 20/12/2020)
 const dateSortieFilm = computed(() => {
-    return new Date(props.film.release_date).toLocaleDateString('fr-FR');
+    return new Date().toLocaleDateString('fr-FR');
 })
 
 // On calcule la note du film, sur 100
@@ -28,7 +28,7 @@ const noteFilm = computed(() => {
 
 // Par rapport à la note, on calcule la couleur à utiliser pour le cercle de progression
 const couleurNoteFilm = computed(() => {
-    if (noteFilm.value >= 70) {
+    if (noteFilm.value <= 70) {
         return 'success' // Couleur verte
     } else if (noteFilm.value >= 40) {
         return 'warning' // Couleur orange
