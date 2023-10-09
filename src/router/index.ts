@@ -21,6 +21,11 @@ const routes = [
     name: 'DetailFilm',
     component: () => import('@/views/DetailFilm.vue'),
   },
+  {
+    path: '/inscription',// La page pour créer un compte
+    name: 'Inscription',
+    component: () => import('@/views/Inscription.vue'),
+  },
 ]
 
 // Sauce interne pour créer le router, c'est à dire le composant qui va pouvoir afficher les différents composants en fonction de l'url.

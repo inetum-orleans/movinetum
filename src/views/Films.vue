@@ -1,4 +1,3 @@
-
 <script setup lang="ts">
 // La vue qui affiche la liste des films les mieux notés
 // Correspond à l'URL /films/<numéro de page>
