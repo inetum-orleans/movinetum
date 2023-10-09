@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, ComponentPublicInstance } from 'vue'
 import { useUtilisateursStore, Utilisateur } from '@/store/utilisateurs'
 import { SubmitEventPromise } from 'vuetify/lib/framework.mjs'
 import { useRouter } from 'vue-router'
+import { VForm } from 'vuetify/lib/components/index.mjs'
 
 // La page d'inscription
 
 const routeur = useRouter()
 const storeUtilisateur = useUtilisateursStore()
+const formulaire = ref<ComponentPublicInstance<VForm>>()
 
 function construireUtilisateurParDefaut() {
     return {
@@ -46,6 +48,7 @@ async function envoyer(evenement: SubmitEventPromise) {
  */
 function reinitialiser() {
     utilisateur.value = construireUtilisateurParDefaut()
+    formulaire.value?.resetValidation()
 }
 
 // Règles de validation
@@ -172,7 +175,7 @@ function regleDateDeNaissance(dateDeNaissance: string) {
 <template>
     <v-container>
         <h1>Inscription</h1>
-        <v-form @submit="envoyer" validate-on="submit">
+        <v-form ref="formulaire" @submit.prevent="envoyer" validate-on="submit">
             <v-text-field
                 v-model="utilisateur.identifiant"
                 label="Identifiant"

@@ -3,8 +3,11 @@
   
   import { ref } from 'vue';
   import { useRouter } from 'vue-router'
+  import { useUtilisateursStore } from './store/utilisateurs'
+  import FormulaireConnexion from './components/FormulaireConnexion.vue'
 
   const router = useRouter()
+  const storeUtilisateur = useUtilisateursStore()
   const recherche = ref('')
 
   function search() {
@@ -37,6 +40,23 @@
         @click:append-inner="search"
         @keyup.enter="search"
       />
+      <v-btn icon>
+        <v-icon>mdi-account</v-icon>
+        <v-menu activator="parent" :close-on-content-click="false">
+          <v-list v-if="storeUtilisateur.utilisateurConnecte">
+            <v-list-item>
+              <v-list-item-title>{{ storeUtilisateur.utilisateurConnecte.prenom + ' ' + storeUtilisateur.utilisateurConnecte.nom }}</v-list-item-title>
+            </v-list-item>
+            <v-divider></v-divider>
+            <v-list-item @click="storeUtilisateur.deconnecter">
+              <v-list-item-title>Déconnexion</v-list-item-title>
+            </v-list-item>
+          </v-list>
+          <v-card v-else class="pa-3">
+            <formulaire-connexion />
+          </v-card>
+        </v-menu>
+      </v-btn>
     </v-app-bar>
     <v-main>
       <!--
