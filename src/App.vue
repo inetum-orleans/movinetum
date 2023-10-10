@@ -11,7 +11,7 @@
   const recherche = ref('')
 
   function search() {
-    router.push({ name: 'Films', params: { page: 1 }, query: { recherche: recherche.value } })
+    router.push({ name: 'Recherche', params: { page: 1 }, query: { recherche: recherche.value } })
   }
 </script>
 

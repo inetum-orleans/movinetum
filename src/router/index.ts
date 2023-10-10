@@ -22,6 +22,11 @@ const routes = [
     component: () => import('@/views/DetailFilm.vue'),
   },
   {
+    path: '/recherche/:page',// Ce chemin correspond à la page des résultats de recherche. La recherche est passée dans l'URL, par exemple /recherche/2?recherche=star+wars. Le ":page" vaudra 2 et le "recherche" vaudra "star wars". 
+    name: 'Recherche',
+    component: () => import('@/views/Recherche.vue'),
+  },
+  {
     path: '/inscription',// La page pour créer un compte
     name: 'Inscription',
     component: () => import('@/views/Inscription.vue'),

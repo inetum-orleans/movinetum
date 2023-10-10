@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// La vue qui affiche la liste des films les mieux notés
-// Correspond à l'URL /films/<numéro de page>
+// La vue qui affiche la liste des résultats de la recherche
+// Correspond à l'URL /recherche/<numéro de page>?recherche=<recherche>
 
 // Liste d'imports
 import { symboleTmdb } from '@/types/symboles'
@@ -19,6 +19,9 @@ const routeur = useRouter()
 // On récupère le client TMDB depuis le conteneur d'injection de dépendances (voir la ligne "app.provide" dans src/main.ts)
 const tmdb = inject(symboleTmdb)!
 
+// On récupère le texte à rechercher depuis la route, si jamais il y en a un
+const recherche = computed(() => route.query.recherche as string)
+
 // Le numéro de page actuel, récupéré depuis la route
 const page = computed(() => route.params.page ? parseInt(route.params.page as string) : 1)
 // La liste des films à afficher. Initialisée à la valeur spéciale "null" pour indiquer que l'on est en cours de chargement.
@@ -26,15 +29,18 @@ const page = computed(() => route.params.page ? parseInt(route.params.page as st
 const listeFilms = ref<ListeFilmsPaginee|null>(null)
 
 // La fonction watch permet de surveiller les changements de la variable page
-watch(page, async () => {
+watch(() => [page.value, recherche.value], async () => {
+    if (!recherche.value) {
+        routeur.push({ name: 'Accueil' })
+        return
+    }
     // Lorsque l'on change de page, on déclenche cette fonction de mise à jour.
     // Etant donné que j'ai marqué immediate:true, cette fonction est aussi appelée immédiatement au premier chargement.
-    
     // On récupère la liste des films les mieux notés depuis l'API TMDB
-    listeFilms.value = await tmdb.movies.topRated({
-        page: page.value,
+    listeFilms.value = await tmdb.search.movies({
         language: 'fr-FR',
-        region: 'FR'
+        query: recherche.value,
+        page: page.value,
     })
 }, { immediate: true })
 
@@ -43,7 +49,7 @@ watch(page, async () => {
  * Cette fonction est appelée lorsqu'on change de page via le composant de pagination
  */
 function changementPage(numPage: number) {
-    routeur.push({ name: 'Films', params: { page: numPage }})
+    routeur.push({ name: 'Recherche', params: { page: numPage }, query: { recherche: recherche.value }})
 }
 </script>
 
