@@ -27,6 +27,16 @@ const routes = [
     component: () => import('@/views/Recherche.vue'),
   },
   {
+    path: '/favoris/:page',// Ce chemin correspond à la page des favoris.
+    name: 'Favoris',
+    component: () => import('@/views/Favoris.vue'),
+  },
+  {
+    path: '/aVoir/:page',// Ce chemin correspond à la page des films à voir.
+    name: 'AVoir',
+    component: () => import('@/views/AVoir.vue'),
+  },
+  {
     path: '/inscription',// La page pour créer un compte
     name: 'Inscription',
     component: () => import('@/views/Inscription.vue'),

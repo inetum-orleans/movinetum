@@ -57,6 +57,8 @@
           </v-card>
         </v-menu>
       </v-btn>
+      <v-btn icon="mdi-star" to="/favoris/1" />
+      <v-btn v-if="storeUtilisateur.utilisateurConnecte" icon="mdi-eye" to="/aVoir/1" />
     </v-app-bar>
     <v-main>
       <!--
