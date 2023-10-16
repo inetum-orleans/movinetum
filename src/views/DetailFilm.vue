@@ -2,6 +2,11 @@
 // La vue qui affiche le détail d'un film
 // Correspond à l'URL /film/<id du film>
 
+// L'URL de base des images de films
+const urlBaseImage = 'https://image.tmdb.org/t/p/w300_and_h450_bestv2'
+// L'URL de base des images de films
+const urlBackgroundImage = 'https://image.tmdb.org/t/p/'
+
 // Récupère la route actuelle, c'est à dire toutes les informations sur l'URL actuelle récupérées par Vue Router
 // La route contient des informations intéressantes, notamment les paramètres de l'URL, comme le numéro de page
 import {useRoute} from 'vue-router'
@@ -24,13 +29,15 @@ const filmDetails = computed(async () => {
     film.value = data
   })
 })
-
-// L'URL de base des images de films
-const urlBaseImage = 'https://image.tmdb.org/t/p/'
 </script>
 <template>
   <div v-if="!!filmDetails">
-    <v-parallax :src="urlBaseImage +'w1920_and_h800_multi_faces'+ film?.backdrop_path">
+    <v-parallax :src="urlBackgroundImage +'w1920_and_h800_multi_faces'+ film?.backdrop_path">
+      <v-row class="d-flex justify-center align-center h-100">
+        <v-col>
+          <v-img :src="urlBaseImage + film?.poster_path" :height="300" alt="Affiche du film" cover></v-img>
+        </v-col>
+        <v-col cols="8">
       <div class="d-flex flex-column fill-height justify-center align-center text-white">
         <h1 class="text-h4 font-weight-thin mb-4">
           {{ film?.title }}
@@ -39,14 +46,21 @@ const urlBaseImage = 'https://image.tmdb.org/t/p/'
           {{ film?.overview }}
         </p>
       </div>
+        </v-col>
+      </v-row>
     </v-parallax>
   </div>
 </template>
 
 <style scoped>
-.v-parallax {
-  > .v-responsive__content {
-    background-image: linear-gradient(to right, rgba(178.5, 115.5, 94.5, 1) calc((50vw - 170px) - 340px), rgba(178.5, 115.5, 94.5, 0.84) 50%, rgba(178.5, 115.5, 94.5, 0.84) 100%);
-  }
+.v-parallax:deep(img) {
+  object-position: calc(20vw);
+}
+
+.v-parallax:deep(.v-responsive__content) {
+  background-image: linear-gradient(to right,
+  rgba(178.5, 115.5, 94.5, 1) calc((50vw - 170px) - 340px),
+  rgba(178.5, 115.5, 94.5, 0.84) 50%,
+  rgba(178.5, 115.5, 94.5, 0.84) 100%);
 }
 </style>
