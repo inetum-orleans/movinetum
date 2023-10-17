@@ -19,7 +19,7 @@
   <v-app theme="dark">
     <!-- La barre de navigation, qui apparaît en haut de l'écran-->
     <v-app-bar>
-      <template v-slot:prepend>
+      <v-container class="d-flex pa-0 h-100 justify-center">
         <router-link to="/" class="h-100 d-flex justify-center">
           <v-img
             width="150"
@@ -29,36 +29,39 @@
             src="/logo_movinetum.svg"
           />
         </router-link>
-      </template>
-      <v-text-field
-        label="Rechercher un film"
-        append-inner-icon="mdi-magnify"
-        single-line
-        hide-details
-        class="ma-2"
-        v-model="recherche"
-        @click:append-inner="search"
-        @keyup.enter="search"
-      />
-      <v-btn icon>
-        <v-icon>mdi-account</v-icon>
-        <v-menu activator="parent" :close-on-content-click="false">
-          <v-list v-if="storeUtilisateur.utilisateurConnecte">
-            <v-list-item>
-              <v-list-item-title>{{ storeUtilisateur.utilisateurConnecte.prenom + ' ' + storeUtilisateur.utilisateurConnecte.nom }}</v-list-item-title>
-            </v-list-item>
-            <v-divider></v-divider>
-            <v-list-item @click="storeUtilisateur.deconnecter">
-              <v-list-item-title>Déconnexion</v-list-item-title>
-            </v-list-item>
-          </v-list>
-          <v-card v-else class="pa-3">
-            <formulaire-connexion />
-          </v-card>
-        </v-menu>
-      </v-btn>
-      <v-btn icon="mdi-star" to="/favoris/1" />
-      <v-btn v-if="storeUtilisateur.utilisateurConnecte" icon="mdi-eye" to="/aVoir/1" />
+        <v-text-field
+          label="Rechercher un film"
+          append-inner-icon="mdi-magnify"
+          single-line
+          hide-details
+          class="ma-2"
+          variant="underlined"
+          density="compact"
+          v-model="recherche"
+          @click:append-inner="search"
+          @keyup.enter="search"
+        />
+        <v-spacer />
+        <v-btn prepend-icon="mdi-star" stacked to="/favoris/1">Mes favoris</v-btn>
+        <v-btn v-if="storeUtilisateur.utilisateurConnecte" prepend-icon="mdi-eye" stacked to="/aVoir/1">Ma liste de visionnage</v-btn>
+        <v-btn prepend-icon="mdi-account" stacked>
+          Mon compte
+          <v-menu activator="parent" :close-on-content-click="false">
+            <v-list v-if="storeUtilisateur.utilisateurConnecte">
+              <v-list-item>
+                <v-list-item-title>{{ storeUtilisateur.utilisateurConnecte.prenom + ' ' + storeUtilisateur.utilisateurConnecte.nom }}</v-list-item-title>
+              </v-list-item>
+              <v-divider></v-divider>
+              <v-list-item @click="storeUtilisateur.deconnecter">
+                <v-list-item-title>Déconnexion</v-list-item-title>
+              </v-list-item>
+            </v-list>
+            <v-card v-else class="pa-3">
+              <formulaire-connexion />
+            </v-card>
+          </v-menu>
+        </v-btn>
+      </v-container>
     </v-app-bar>
     <v-main>
       <!--

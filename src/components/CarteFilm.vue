@@ -144,8 +144,12 @@ function basculerAVoir() {
     transition: all 0.2s ease-in-out;
 }
 
+.carte-film:hover :deep(.v-card__overlay) {
+    background-color: #FFC700;
+}
+
 .carte-film:hover {
-    transform: scale(1.05);
+    transform: scale(1.02);
 }
 
 .actions-carte {
