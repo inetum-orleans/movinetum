@@ -145,7 +145,7 @@ function basculerAVoir() {
 }
 
 .carte-film:hover :deep(.v-card__overlay) {
-    background-color: #FFC700;
+    background-color: rgb(var(--v-theme-primary)) !important;
 }
 
 .carte-film:hover {
