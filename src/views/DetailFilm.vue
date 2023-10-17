@@ -4,16 +4,15 @@
 
 // Récupère la route actuelle, c'est à dire toutes les informations sur l'URL actuelle récupérées par Vue Router
 // La route contient des informations intéressantes, notamment les paramètres de l'URL, comme le numéro de page
-import { useRoute } from 'vue-router'
-import { computed, inject, ref, watch } from 'vue'
-import { symboleTmdb } from '@/types/symboles'
-import { AppendToResponseMovieKey, Movie, MovieDetails, TMDB } from 'tmdb-ts'
-import { useFavorisStore } from '@/store/favoris'
+import {useRoute} from 'vue-router'
+import {computed, inject, ref, watch} from 'vue'
+import {symboleTmdb} from '@/types/symboles'
+import {Movie, MovieDetails, TMDB} from 'tmdb-ts'
+import {useFavorisStore} from '@/store/favoris'
 
 
-// L'URL de base des images de films
-import { useUtilisateursStore } from '@/store/utilisateurs'
-import { AppendToResponse } from 'tmdb-ts/dist/types'
+import {useUtilisateursStore} from '@/store/utilisateurs'
+import {AppendToResponse} from 'tmdb-ts/dist/types'
 
 const urlBaseImage = 'https://image.tmdb.org/t/p/w300_and_h450_bestv2'
 // L'URL de base des images de films pour les arrière-plans
@@ -39,12 +38,23 @@ type DetailFilm = AppendToResponse<MovieDetails, typeof infosAdditionnelles, 'mo
 const identifiantFilm = computed<number>(() => route.params.id ? Number(route.params.id as string) : 1)
 
 const film = ref<DetailFilm | null>(null)
+const isLoading = ref(true)
 
+// Regarde les changements dans le numéro de film et charge les détails du film depuis l'API TMDB
 watch(identifiantFilm, async () => {
-  const data = await tmdb.movies.details(identifiantFilm.value, infosAdditionnelles)
-  film.value = data
+  isLoading.value = true
+  try {
+    const data = await tmdb.movies.details(identifiantFilm.value, infosAdditionnelles)
+    film.value = data
+  } catch (error) {
+    // Gérer l'erreur (par exemple, afficher un message d'erreur)
+    console.error(error)
+  } finally {
+    isLoading.value = false
+  }
 }, { immediate: true })
 
+// Fonction qui permet de convertir la date de sortie du film en format Français
 function tempsConvertiEnHeureMinute (runtime: number | null | undefined): string {
   if (!runtime!) return ''
   const heure = Math.floor(runtime / 60)
@@ -57,6 +67,9 @@ const dateSortieFilm = computed(() => {
   return new Date().toLocaleDateString('fr-FR')
 })
 
+/**
+ * Fonction qui permet de recuperer les informations sur le film pour garder le même type Movie
+ */
 const infosGeneralesFilm = computed<Movie | null>(() => {
   const valeurFilm = film?.value
   if (!valeurFilm) return null
@@ -77,6 +90,7 @@ const infosGeneralesFilm = computed<Movie | null>(() => {
     vote_average: valeurFilm?.vote_average
   }
 })
+
 /**
  * Les propriétés à appliquer sur le bouton "favori"
  */
@@ -96,16 +110,19 @@ const proprietesIconeFavoris = computed(() => {
   }
 })
 
-const crewDetails = computed(() => {
+/**
+ * Permet de faciliter la récupération des jobs par acteur qui ont comme paramètre ['Director', 'Screenplay', 'Story', 'Writer', 'Characters', 'Novel']
+ */
+const detailsEquipage = computed(() => {
   if (!film.value) return null
   const crew = film.value.credits.crew
 
-  const filteredJobs = ['Director', 'Screenplay', 'Story', 'Writer', 'Characters', 'Novel']
-  const importantJobs = crew.filter(member => filteredJobs.includes(member.job))
-  const mergedJobs = importantJobs.reduce((acc, member) => {
-    const existingMember = acc.find(m => m.id === member.id)
-    if (existingMember) {
-      existingMember.job = `${existingMember.job},${member.job}`
+  const filtrerLesJobs = ['Director', 'Screenplay', 'Story', 'Writer', 'Characters', 'Novel']
+  const importerLesJobs = crew.filter(member => filtrerLesJobs.includes(member.job))
+  const fusionnerLesJobs = importerLesJobs.reduce((acc, member) => {
+    const membreExistent = acc.find(m => m.id === member.id)
+    if (membreExistent) {
+      membreExistent.job = `${membreExistent.job},${member.job}`
     } else {
       acc.push({
         id: member.id,
@@ -116,7 +133,7 @@ const crewDetails = computed(() => {
     return acc
   }, [] as {id: number, name: string, job: string }[])
 
-  return mergedJobs
+  return fusionnerLesJobs
 })
 
 /**
@@ -163,11 +180,22 @@ const proprietesIconeAVoir = computed(() => {
 
 </script>
 <template>
-  <div v-if="!!film">
-    <v-parallax class="tototo" :src="urlBackgroundImage + film?.backdrop_path">
+  <!--  On affiche un loader si le composant est en chargement -->
+  <v-container v-if="isLoading" class="loader d-flex align-center justify-center h-100">
+    <v-progress-circular
+      v-if="isLoading"
+      indeterminate
+      size="150"
+      width="7"
+      color="primary"
+    ></v-progress-circular>
+  </v-container>
+  <!--  Si le film est disponible, on affiche les détails du film  -->
+  <div v-else-if="film && !isLoading" :class="['film_details',!isLoading ? 'active' : ''] ">
+    <v-parallax :src="urlBackgroundImage + film.backdrop_path">
       <v-container class="d-flex justify-center align-center h-100">
-        <v-row>
-          <v-col cols="6">
+        <v-row class="my-16">
+          <v-col cols="11" md="10" lg="8">
             <div class="d-flex flex-column fill-height justify-center text-white">
               <h1 class="text-h4 font-weight-bold">{{ film?.title }}</h1>
               <p class="mb-2 my-2 d-flex align-center">
@@ -201,23 +229,26 @@ const proprietesIconeAVoir = computed(() => {
               <p class="subheading">
                 {{ film?.overview }}
               </p>
-              <div class="mt-5">
-                <p v-for="membre in crewDetails"
+              <v-row class="mt-5">
+                <v-col cols="3" class="member" v-for="membre in detailsEquipage"
                      :key="membre.id">
-                  {{ membre.name }} - {{ membre.job }}
-                </p>
-              </div>
+                  <p>
+                    <span class="font-weight-bold mb-2 d-block">{{ membre.name }}</span>
+                    {{ membre.job }}
+                  </p>
+                </v-col>
+              </v-row>
             </div>
           </v-col>
         </v-row>
       </v-container>
     </v-parallax>
 
+    <!--  On affiche les Credits du films  -->
     <v-container class="mt-16">
       <h2>Distribution</h2>
       <v-slide-group
           center-active
-          show-arrows
       >
         <v-slide-group-item
             v-for="(value, index) in film.credits.cast"
@@ -245,12 +276,11 @@ const proprietesIconeAVoir = computed(() => {
         </v-slide-group-item>
       </v-slide-group>
     </v-container>
-
+    <!--  On affiche les récommendations du films  -->
     <v-container class="mt-16">
-      <h2>Vous pourrier aimer</h2>
+      <h2>Vous pourriez aimer</h2>
       <v-slide-group
           center-active
-          show-arrows
       >
         <v-slide-group-item
             v-for="(value, index) in film.recommendations.results"
@@ -283,13 +313,19 @@ const proprietesIconeAVoir = computed(() => {
       </v-slide-group>
     </v-container>
   </div>
+  <div v-else>
+    <!-- Gérez le cas où les données ne sont pas disponibles ou où une erreur s'est produite -->
+    <p>Les détails du film ne sont pas disponibles.</p>
+  </div>
 </template>
 
 <style scoped>
+.member {
+  min-width: 180px;
+}
 
 .v-parallax:deep(.v-responsive__content) {
   background: rgb(17, 17, 17);
-  background: linear-gradient(95deg, rgba(var(--v-theme-background), 1) 10%, rgba(255, 255, 255, 0) 100%);
-
+  background: linear-gradient(95deg, rgba(var(--v-theme-background), 0.9) 30vw, rgba(255, 255, 255, 0) 100%);
 }
 </style>
