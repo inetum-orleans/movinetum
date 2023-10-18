@@ -2,29 +2,26 @@
 // La vue qui affiche le détail d'un film
 // Correspond à l'URL /film/<id du film>
 
-// Récupère la route actuelle, c'est à dire toutes les informations sur l'URL actuelle récupérées par Vue Router
-// La route contient des informations intéressantes, notamment les paramètres de l'URL, comme le numéro de page
 import {useRoute} from 'vue-router'
 import {computed, inject, ref, watch} from 'vue'
 import {symboleTmdb} from '@/types/symboles'
 import {Movie, MovieDetails, TMDB} from 'tmdb-ts'
 import {useFavorisStore} from '@/store/favoris'
-
+import CarteFilm from '@/components/CarteFilm.vue'
 
 import {useUtilisateursStore} from '@/store/utilisateurs'
 import {AppendToResponse} from 'tmdb-ts/dist/types'
 
-const urlBaseImage = 'https://image.tmdb.org/t/p/w300_and_h450_bestv2'
 // L'URL de base des images de films pour les arrière-plans
 const urlBackgroundImage = 'https://image.tmdb.org/t/p/w1920_and_h800_multi_faces'
 // L'URL de base des images de films pour les crédits
 const urlCreditImage = 'https://image.tmdb.org/t/p/w138_and_h175_face'
-// L'URL de base des images de films
-const urlAimerImage = 'https://image.tmdb.org/t/p/w533_and_h300_bestv2'
 
 // On récupère le client TMDB depuis le conteneur d'injection de dépendances (voir la ligne "app.provide" dans src/main.ts)
 const tmdb: TMDB = inject(symboleTmdb)!
 
+// Récupère la route actuelle, c'est à dire toutes les informations sur l'URL actuelle récupérées par Vue Router
+// La route contient des informations intéressantes, notamment les paramètres de l'URL, comme le numéro de page
 const route = useRoute()
 
 const storeUtilisateur = useUtilisateursStore()
@@ -44,8 +41,7 @@ const isLoading = ref(true)
 watch(identifiantFilm, async () => {
   isLoading.value = true
   try {
-    const data = await tmdb.movies.details(identifiantFilm.value, infosAdditionnelles)
-    film.value = data
+    film.value = await tmdb.movies.details(identifiantFilm.value, infosAdditionnelles)
   } catch (error) {
     // Gérer l'erreur (par exemple, afficher un message d'erreur)
     console.error(error)
@@ -54,13 +50,14 @@ watch(identifiantFilm, async () => {
   }
 }, { immediate: true })
 
-// Fonction qui permet de convertir la date de sortie du film en format Français
-function tempsConvertiEnHeureMinute (runtime: number | null | undefined): string {
-  if (!runtime!) return ''
-  const heure = Math.floor(runtime / 60)
-  const minutes = runtime % 60
-  return `${heure}h${minutes}`
-}
+// Fonction qui permet de convertir la durée du film en heure et minute
+const dureeHeureMinutes = computed(() => {
+  if (!film.value?.runtime) return ''
+  const dureeMinutes = film.value?.runtime
+  const heures = Math.floor(dureeMinutes / 60)
+  const minutes = dureeMinutes % 60
+  return `${heures}h${minutes}`
+})
 
 // On calcule la date de sortie du film, en format français (ex: 20/12/2020)
 const dateSortieFilm = computed(() => {
@@ -117,23 +114,28 @@ const detailsEquipage = computed(() => {
   if (!film.value) return null
   const crew = film.value.credits.crew
 
-  const filtrerLesJobs = ['Director', 'Screenplay', 'Story', 'Writer', 'Characters', 'Novel']
-  const importerLesJobs = crew.filter(member => filtrerLesJobs.includes(member.job))
-  const fusionnerLesJobs = importerLesJobs.reduce((acc, member) => {
-    const membreExistent = acc.find(m => m.id === member.id)
+  const fonctionsAffichees = ['Director', 'Screenplay', 'Story', 'Writer', 'Characters', 'Novel']
+  // La liste des personnes qui ont une fonction parmi la liste ci-dessus
+  const personnesAvecFonctionAAfficher = crew.filter(membre => fonctionsAffichees.includes(membre.job))
+
+  const resultatDetailsEquipage = [] as {id: number, nom: string, fonction: string }[]
+  for (const membre of personnesAvecFonctionAAfficher) {
+    // Cherche si ce membre fait déjà partie de la liste des résultats
+    const membreExistent = resultatDetailsEquipage.find(m => m.id === membre.id)
     if (membreExistent) {
-      membreExistent.job = `${membreExistent.job},${member.job}`
+      // Si il fait déjà partie de la liste, on lui rajoute simplement une fonction
+      membreExistent.fonction = `${membreExistent.fonction},${membre.job}`
     } else {
-      acc.push({
-        id: member.id,
-        name: member.name,
-        job: member.job
+      // Sinon, on ajoute une nouvelle personne à la liste
+      resultatDetailsEquipage.push({
+        id: membre.id,
+        nom: membre.name,
+        fonction: membre.job
       })
     }
-    return acc
-  }, [] as {id: number, name: string, job: string }[])
+  }
 
-  return fusionnerLesJobs
+  return resultatDetailsEquipage
 })
 
 /**
@@ -191,7 +193,7 @@ const proprietesIconeAVoir = computed(() => {
     ></v-progress-circular>
   </v-container>
   <!--  Si le film est disponible, on affiche les détails du film  -->
-  <div v-else-if="film && !isLoading" :class="['film_details',!isLoading ? 'active' : ''] ">
+  <div v-else-if="film && !isLoading">
     <v-parallax :src="urlBackgroundImage + film.backdrop_path">
       <v-container class="d-flex justify-center align-center h-100">
         <v-row class="my-16">
@@ -201,9 +203,9 @@ const proprietesIconeAVoir = computed(() => {
               <p class="mb-2 my-2 d-flex align-center">
                 <span class="ma-2 ml-0">{{ dateSortieFilm }} (FR)</span>
                 <span class="text-h5">•</span>
-                  <span class="ma-2">{{film.genres.map(genre => genre.name).join(', ')}}</span>
+                <span class="ma-2">{{film.genres.map(genre => genre.name).join(', ')}}</span>
                 <span class="text-h5">•</span>
-                <span class="ma-2">{{ tempsConvertiEnHeureMinute(film?.runtime) }}</span>
+                <span class="ma-2">{{ dureeHeureMinutes }}</span>
               </p>
               <div class="d-flex align-center justify-lg-space-between mb-4">
                 <div class="ma-2 ml-0">
@@ -218,10 +220,11 @@ const proprietesIconeAVoir = computed(() => {
                     <v-icon v-bind="proprietesIconeFavoris"/>
                   </v-btn>
                   <v-btn v-if="storeUtilisateur.utilisateurConnecte" @click.prevent="basculerAVoir"
-                         class="ma-2 bg-primary"
+                         class="ma-2"
+                         color="primary"
                          size="x-large">
                     <v-icon v-bind="proprietesIconeAVoir" class="mr-2"/>
-                    Ajouter à la watchlist
+                    À voir
                   </v-btn>
                 </div>
               </div>
@@ -230,11 +233,11 @@ const proprietesIconeAVoir = computed(() => {
                 {{ film?.overview }}
               </p>
               <v-row class="mt-5">
-                <v-col cols="3" class="member" v-for="membre in detailsEquipage"
+                <v-col cols="3" class="membre" v-for="membre in detailsEquipage"
                      :key="membre.id">
                   <p>
-                    <span class="font-weight-bold mb-2 d-block">{{ membre.name }}</span>
-                    {{ membre.job }}
+                    <span class="font-weight-bold mb-2 d-block">{{ membre.nom }}</span>
+                    {{ membre.fonction }}
                   </p>
                 </v-col>
               </v-row>
@@ -248,67 +251,47 @@ const proprietesIconeAVoir = computed(() => {
     <v-container class="mt-16">
       <h2>Distribution</h2>
       <v-slide-group
-          center-active
+        center-active
       >
         <v-slide-group-item
-            v-for="(value, index) in film.credits.cast"
-            :key="index"
-            v-slot="{ isSelected, toggle }"
+          v-for="(value, index) in film.credits.cast"
+          :key="index"
+          v-slot="{ toggle }"
         >
           <v-card
-              class="ma-4"
-              height="301"
-              width="167"
-              @click="toggle"
+            class="ma-4"
+            @click="toggle"
+            width="138"
           >
             <v-img
-                class="align-end text-white"
-                :src="urlCreditImage + value?.profile_path"
-                cover
+              class="align-end text-white"
+              :src="value?.profile_path ? urlCreditImage + value?.profile_path : 'https://placehold.co/138x175?text=❌'"
+              width="138"
+              height="175"
+              cover
             >
             </v-img>
             <v-card-text>
               <h3>{{ value.name }}</h3>
               <div>{{ value.original_name }}</div>
             </v-card-text>
-
           </v-card>
         </v-slide-group-item>
       </v-slide-group>
     </v-container>
-    <!--  On affiche les récommendations du films  -->
+    <!--  On affiche les recommendations du films  -->
     <v-container class="mt-16">
       <h2>Vous pourriez aimer</h2>
       <v-slide-group
-          center-active
+        center-active
       >
         <v-slide-group-item
-            v-for="(value, index) in film.recommendations.results"
-            :key="index"
-            v-slot="{ isSelected, toggle }"
+          v-for="(value, index) in film.recommendations.results"
+          :key="index"
         >
-          <v-card
-              class="ma-4"
-              width="393"
-              @click="toggle"
-          >
-            <v-img
-                class="align-end text-white"
-                :src="urlAimerImage + value?.backdrop_path"
-                cover
-            >
-              <v-card-title>
-                <v-chip class="bg-secondary font-weight-bold rounded pa-1">
-                  {{ value?.vote_average.toFixed(1) }}/10
-                </v-chip>
-              </v-card-title>
-            </v-img>
-            <v-card-text>
-              <span class="text-primary">{{new Date(value.release_date).getFullYear()}} / </span>
-              <h3>{{ value.title }}</h3>
-            </v-card-text>
-
-          </v-card>
+          <div class="pa-2" style="width:300px">
+            <carte-film :film="(value as Movie)" />
+          </div>
         </v-slide-group-item>
       </v-slide-group>
     </v-container>
@@ -320,7 +303,7 @@ const proprietesIconeAVoir = computed(() => {
 </template>
 
 <style scoped>
-.member {
+.membre {
   min-width: 180px;
 }
 
