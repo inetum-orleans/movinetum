@@ -5,15 +5,8 @@ import { computed } from 'vue'
 
 import { useUtilisateursStore } from '@/store/utilisateurs'
 import { useFavorisStore } from '@/store/favoris'
-import { useGenresStore } from '@/store/genres'
-
-// Les dimensions d'une image de film, en pixels
-// Ces valeur ne sort pas de nulle part. Elle vient d'une des largeurs possibles de "poster_sizes"
-// issue de la requête https://api.themoviedb.org/3/configuration (documentation : https://developer.themoviedb.org/reference/configuration-details)
-const largeurImagePixels = 154
-const hauteurImagePixels = 231
-// L'URL de base des images de films
-const urlBaseImage = 'https://image.tmdb.org/t/p/w' + largeurImagePixels
+import { useTMDBConfigurationStore } from '@/store/tmdb-configuration'
+import { UseElementSize } from '@vueuse/components'
 
 // Définition des "propriétés" que l'on peut passer sur le composant personnalisé "<carte-film />"
 const props = defineProps<{
@@ -22,7 +15,7 @@ const props = defineProps<{
 
 const storeUtilisateur = useUtilisateursStore()
 const storeFavoris = useFavorisStore()
-const storeGenres = useGenresStore()
+const storeTMDBConfiguration = useTMDBConfigurationStore()
 
 // On calcule la date de sortie du film, en format français (ex: 20/12/2020)
 const anneeSortieFilm = computed(() => {
@@ -30,7 +23,16 @@ const anneeSortieFilm = computed(() => {
 })
 
 const genresFilm = computed(() => {
-    return props.film.genre_ids.map(id => storeGenres.traduireGenre(id)).join(', ')
+    return props.film.genre_ids.map(id => storeTMDBConfiguration.traduireGenre(id)).join(', ')
+})
+
+// Normalement, cette fonction pourrait retourner l'URL de l'image à afficher.
+// Cependant, l'API nous propose plusieurs tailles d'images, que nous allons proposer
+// au navigateur. Le navigateur choisira ensuite la bonne image à afficher, en fonction de la taille disponible
+// C'est une technique avancée, mais cela permet de ne pas télécharger des images lourdes inutilement,
+// sur des petits écrans par exemple.
+const ensembleAffiches = computed(() => {
+    return storeTMDBConfiguration.calculerCheminsImagePoster(props.film.poster_path)
 })
 
 // On calcule la note du film, sur 100
@@ -109,40 +111,41 @@ function basculerAVoir() {
     }
 }
 
-
 </script>
 <template>
-    <v-col cols="6" sm="4" md="3" lg="2">
-        <v-card
-            :to="{ name: 'DetailFilm', params: { id: film.id }}"
-            class="carte-film flex-column h-100"
-            >
-            <v-img :src="urlBaseImage + film.poster_path" alt="Affiche du film" :height="hauteurImagePixels" cover>
-            </v-img>
-            <div class="actions-carte d-flex align-center w-100">
-                <div class="pa-1 bg-white rounded-circle">
-                    <v-progress-circular :model-value="noteFilm" :color="couleurNoteFilm">
-                        {{ noteFilm }}
-                    </v-progress-circular>
-                </div>
-                <v-spacer />
-                <v-btn v-if="storeUtilisateur.utilisateurConnecte" @click.prevent="basculerFavori" icon size="small">
-                    <v-icon v-bind="proprietesIconeFavoris" />
-                </v-btn>
-                <v-btn v-if="storeUtilisateur.utilisateurConnecte" @click.prevent="basculerAVoir" icon size="small">
-                    <v-icon v-bind="proprietesIconeAVoir" />
-                </v-btn>
+    <v-card
+        :to="{ name: 'DetailFilm', params: { id: film.id }}"
+        class="carte-film flex-column h-100"
+        >
+        <!--use-element-size permet de surveiller la taille de cet élément. Par défaut, la taille sera de 154x0, mais elle sera recalculée par la suite.
+            La valeur "width" entre accolades est la valeur calculée que l'on récupère, et que l'on utilise pour donner ensuite dans l'attribut "sizes" de l'image
+        -->
+        <use-element-size :width="154" :height="0" v-slot="{ width }">
+            <v-img :src="ensembleAffiches" :sizes="width + 'px'" alt="Affiche du film" cover />
+        </use-element-size>
+        <div class="actions-carte d-flex align-center w-100">
+            <div class="pa-1 bg-white rounded-circle">
+                <v-progress-circular :model-value="noteFilm" :color="couleurNoteFilm">
+                    {{ noteFilm }}
+                </v-progress-circular>
             </div>
-            <div class="mt-3 pa-2">
-                <p class="text-caption text-primary text-truncate">
-                    {{ anneeSortieFilm }} / {{ genresFilm }}
-                </p>
-                <p class="text-subtitle-1 font-weight-bold">
-                    {{ film.title }}
-                </p>
-            </div>
-        </v-card>
-    </v-col>
+            <v-spacer />
+            <v-btn v-if="storeUtilisateur.utilisateurConnecte" @click.prevent="basculerFavori" icon size="small">
+                <v-icon v-bind="proprietesIconeFavoris" />
+            </v-btn>
+            <v-btn v-if="storeUtilisateur.utilisateurConnecte" @click.prevent="basculerAVoir" icon size="small">
+                <v-icon v-bind="proprietesIconeAVoir" />
+            </v-btn>
+        </div>
+        <div class="mt-3 pa-2">
+            <p class="text-caption text-primary text-truncate">
+                {{ anneeSortieFilm }} / {{ genresFilm }}
+            </p>
+            <p class="text-subtitle-1 font-weight-bold">
+                {{ film.title }}
+            </p>
+        </div>
+    </v-card>
 </template>
 
 <style scoped>

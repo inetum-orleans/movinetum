@@ -31,8 +31,9 @@ function changementPage(numPage: number) {
         <template v-if="props.films">
             <!-- Si on n'est pas en chargement, on affiche ce contenu-->
             <v-row>
-                <carte-film v-for="film in props.films.results" :key="film.id" :film="film">
-                </carte-film>
+                <v-col cols="6" sm="4" md="3" lg="2" v-for="film in props.films.results" :key="film.id">
+                    <carte-film :film="film" />
+                </v-col>
             </v-row>
             <v-bottom-navigation>
                 <v-container class="pa-0">
