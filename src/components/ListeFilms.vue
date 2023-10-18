@@ -34,11 +34,16 @@ function changementPage(numPage: number) {
                 <carte-film v-for="film in props.films.results" :key="film.id" :film="film">
                 </carte-film>
             </v-row>
-            <v-pagination
-                :model-value="props.films.page"
-                @update:model-value="changementPage"
-                :length="props.films.total_pages"
-                ></v-pagination>
+            <v-bottom-navigation>
+                <v-container class="pa-0">
+                    <v-pagination
+                        :model-value="props.films.page"
+                        @update:model-value="changementPage"
+                        :length="props.films.total_pages"
+                        class="pagination"
+                        ></v-pagination>
+                </v-container>
+            </v-bottom-navigation>
         </template>
         <div v-else>Chargement en cours...</div>
     </v-container>
