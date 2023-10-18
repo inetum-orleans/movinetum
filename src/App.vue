@@ -19,11 +19,10 @@
   <v-app theme="dark">
     <!-- La barre de navigation, qui apparaît en haut de l'écran-->
     <v-app-bar>
-      <v-container class="d-flex pa-0 h-100 justify-center">
-        <router-link to="/" class="h-100 d-flex justify-center">
+      <v-container class="d-flex py-0 h-100 align-center">
+        <router-link to="/" class="h-100 d-flex mr-2">
           <v-img
             width="150"
-            class="mr-2"
             @click="recherche = ''"
             alt="Logo Movinetum"
             src="/logo_movinetum.svg"
@@ -42,9 +41,9 @@
           @keyup.enter="search"
         />
         <v-spacer />
-        <v-btn prepend-icon="mdi-star" stacked to="/favoris/1">Mes favoris</v-btn>
-        <v-btn v-if="storeUtilisateur.utilisateurConnecte" prepend-icon="mdi-eye" stacked to="/aVoir/1">Ma liste de visionnage</v-btn>
-        <v-btn prepend-icon="mdi-account" stacked>
+        <v-btn prepend-icon="mdi-star" to="/favoris/1">Mes favoris</v-btn>
+        <v-btn v-if="storeUtilisateur.utilisateurConnecte" prepend-icon="mdi-eye" to="/aVoir/1">À voir</v-btn>
+        <v-btn prepend-icon="mdi-account">
           Mon compte
           <v-menu activator="parent" :close-on-content-click="false">
             <v-list v-if="storeUtilisateur.utilisateurConnecte">

@@ -5,6 +5,7 @@ import { computed } from 'vue'
 
 import { useUtilisateursStore } from '@/store/utilisateurs'
 import { useFavorisStore } from '@/store/favoris'
+import { useGenresStore } from '@/store/genres'
 
 // Les dimensions d'une image de film, en pixels
 // Ces valeur ne sort pas de nulle part. Elle vient d'une des largeurs possibles de "poster_sizes"
@@ -21,10 +22,15 @@ const props = defineProps<{
 
 const storeUtilisateur = useUtilisateursStore()
 const storeFavoris = useFavorisStore()
+const storeGenres = useGenresStore()
 
 // On calcule la date de sortie du film, en format français (ex: 20/12/2020)
-const dateSortieFilm = computed(() => {
-    return new Date().toLocaleDateString('fr-FR');
+const anneeSortieFilm = computed(() => {
+    return new Date(props.film.release_date).getFullYear()
+})
+
+const genresFilm = computed(() => {
+    return props.film.genre_ids.map(id => storeGenres.traduireGenre(id)).join(', ')
 })
 
 // On calcule la note du film, sur 100
@@ -127,12 +133,12 @@ function basculerAVoir() {
                     <v-icon v-bind="proprietesIconeAVoir" />
                 </v-btn>
             </div>
-            <div class="mt-2 pa-2">
+            <div class="mt-3 pa-2">
+                <p class="text-caption text-primary text-truncate">
+                    {{ anneeSortieFilm }} / {{ genresFilm }}
+                </p>
                 <p class="text-subtitle-1 font-weight-bold">
                     {{ film.title }}
-                </p>
-                <p class="text-caption">
-                    {{ dateSortieFilm }}
                 </p>
             </div>
         </v-card>

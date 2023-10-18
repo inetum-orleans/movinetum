@@ -6,7 +6,7 @@
 
 // Styles
 import '@mdi/font/css/materialdesignicons.css'
-import 'vuetify/styles'
+import '@/styles/style.scss'
 
 // Composables
 import { createVuetify } from 'vuetify'
@@ -23,4 +23,14 @@ export default createVuetify({
       },
     },
   },
+  // Définit de propriétés par défaut sur certains composants
+  defaults: {
+    VAppBar: {
+      VBtn: {
+        size: 'x-small',
+        stacked: true,
+        class: ['text-none', 'font-weight-regular']
+      }
+    }
+  }
 })
