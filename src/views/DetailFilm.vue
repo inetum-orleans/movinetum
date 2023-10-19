@@ -289,7 +289,7 @@ const proprietesIconeAVoir = computed(() => {
           v-for="(value, index) in film.recommendations.results"
           :key="index"
         >
-          <div class="pa-2" style="width:300px">
+          <div class="pa-2" style="width:200px">
             <carte-film :film="(value as Movie)" />
           </div>
         </v-slide-group-item>

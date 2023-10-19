@@ -35,16 +35,12 @@ function changementPage(numPage: number) {
                     <carte-film :film="film" />
                 </v-col>
             </v-row>
-            <v-bottom-navigation>
-                <v-container class="pa-0">
-                    <v-pagination
-                        :model-value="props.films.page"
-                        @update:model-value="changementPage"
-                        :length="props.films.total_pages"
-                        class="pagination"
-                        ></v-pagination>
-                </v-container>
-            </v-bottom-navigation>
+            <v-pagination
+                :model-value="props.films.page"
+                @update:model-value="changementPage"
+                :length="props.films.total_pages"
+                class="pagination"
+                ></v-pagination>
         </template>
         <div v-else>Chargement en cours...</div>
     </v-container>

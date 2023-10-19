@@ -25,6 +25,9 @@ export default createVuetify({
   },
   // Définit de propriétés par défaut sur certains composants
   defaults: {
+    VBtn: {
+      class: ['text-none']
+    },
     VAppBar: {
       VBtn: {
         size: 'x-small',

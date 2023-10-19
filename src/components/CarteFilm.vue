@@ -124,11 +124,11 @@ function basculerAVoir() {
             <v-img :src="ensembleAffiches" :sizes="width + 'px'" alt="Affiche du film" cover />
         </use-element-size>
         <div class="actions-carte d-flex align-center w-100">
-            <div class="pa-1 bg-white rounded-circle">
+            <v-sheet class="pa-1 rounded-circle">
                 <v-progress-circular :model-value="noteFilm" :color="couleurNoteFilm">
                     {{ noteFilm }}
                 </v-progress-circular>
-            </div>
+            </v-sheet>
             <v-spacer />
             <v-btn v-if="storeUtilisateur.utilisateurConnecte" @click.prevent="basculerFavori" icon size="small">
                 <v-icon v-bind="proprietesIconeFavoris" />
