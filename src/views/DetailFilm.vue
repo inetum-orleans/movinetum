@@ -41,7 +41,7 @@ const isLoading = ref(true)
 watch(identifiantFilm, async () => {
   isLoading.value = true
   try {
-    film.value = await tmdb.movies.details(identifiantFilm.value, infosAdditionnelles)
+    film.value = await tmdb.movies.details(identifiantFilm.value, infosAdditionnelles, 'fr-FR')
   } catch (error) {
     // Gérer l'erreur (par exemple, afficher un message d'erreur)
     console.error(error)

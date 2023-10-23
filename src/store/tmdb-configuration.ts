@@ -15,7 +15,7 @@ export const useTMDBConfigurationStore = defineStore('tmdb-configuration', () =>
         configuration.value = await tmdb.configuration.getCurrent()
 
         // On récupère les genres depuis l'API TMDB
-        const genresFilms = await tmdb.genres.movies()
+        const genresFilms = await tmdb.genres.movies({ language: 'fr-FR' })
         const resultat: Record<number, string> = {}
         genresFilms.genres.forEach(genre => {
             resultat[genre.id] = genre.name
