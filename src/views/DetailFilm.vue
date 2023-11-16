@@ -2,7 +2,6 @@
 // La vue qui affiche le détail d'un film
 // Correspond à l'URL /film/<id du film>
 
-import {useRoute} from 'vue-router'
 import {computed, inject, ref, watch} from 'vue'
 import {symboleTmdb} from '@/types/symboles'
 import {Movie, MovieDetails, TMDB} from 'tmdb-ts'
@@ -20,28 +19,25 @@ const urlCreditImage = 'https://image.tmdb.org/t/p/w138_and_h175_face'
 // On récupère le client TMDB depuis le conteneur d'injection de dépendances (voir la ligne "app.provide" dans src/main.ts)
 const tmdb: TMDB = inject(symboleTmdb)!
 
-// Récupère la route actuelle, c'est à dire toutes les informations sur l'URL actuelle récupérées par Vue Router
-// La route contient des informations intéressantes, notamment les paramètres de l'URL, comme le numéro de page
-const route = useRoute()
-
 const storeUtilisateur = useUtilisateursStore()
 const storeFavoris = useFavorisStore()
 
 const infosAdditionnelles: ['images', 'videos', 'credits', 'recommendations', 'reviews', 'changes', 'similar', 'lists', 'release_dates', 'alternative_titles', 'external_ids', 'translations', 'watch/providers', 'keywords'] = ['images', 'videos', 'credits', 'recommendations', 'reviews', 'changes', 'similar', 'lists', 'release_dates', 'alternative_titles', 'external_ids', 'translations', 'watch/providers', 'keywords']
 type DetailFilm = AppendToResponse<MovieDetails, typeof infosAdditionnelles, 'movie'>
 
-
-// Le numéro de page actuel, récupéré depuis la route
-const identifiantFilm = computed<number>(() => route.params.id ? Number(route.params.id as string) : 1)
+// Les propriétés passées par le routeur (voir src/router/index.ts)
+const props = defineProps<{
+    id: number
+}>();
 
 const film = ref<DetailFilm | null>(null)
 const isLoading = ref(true)
 
 // Regarde les changements dans le numéro de film et charge les détails du film depuis l'API TMDB
-watch(identifiantFilm, async () => {
+watch(() => props.id, async () => {
   isLoading.value = true
   try {
-    film.value = await tmdb.movies.details(identifiantFilm.value, infosAdditionnelles, 'fr-FR')
+    film.value = await tmdb.movies.details(props.id, infosAdditionnelles, 'fr-FR')
   } catch (error) {
     // Gérer l'erreur (par exemple, afficher un message d'erreur)
     console.error(error)

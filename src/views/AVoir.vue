@@ -4,45 +4,44 @@
 
 // Liste d'imports
 import { ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import ListeFilms from '@/components/ListeFilms.vue'
-import { computed } from 'vue'
 import { ListeFilmsPaginee } from '@/types/interfaces'
 import { useUtilisateursStore } from '@/store/utilisateurs'
 import { useFavorisStore } from '@/store/favoris'
 
 const filmsParPage = 20
 
-// Récupère la route actuelle, c'est à dire toutes les informations sur l'URL actuelle récupérées par Vue Router
-// La route contient des informations intéressantes, notamment les paramètres de l'URL, comme le numéro de page
-const route = useRoute()
 // Le routeur, qui permet de naviguer vers une autre page via du code javascript
 const routeur = useRouter()
 
 const storeUtilisateur = useUtilisateursStore()
 const storeFavoris = useFavorisStore()
 
-// Le numéro de page actuel, récupéré depuis la route
-const page = computed(() => route.params.page ? parseInt(route.params.page as string) : 1)
+// Les propriétés passées par le routeur (voir src/router/index.ts)
+const props = defineProps<{
+    page: number
+}>();
+
 // La liste des films à afficher. Initialisée à la valeur spéciale "null" pour indiquer que l'on est en cours de chargement.
 // Une fois la liste chargée, la valeur est initialisée à la liste des films.
 const listeFilms = ref<ListeFilmsPaginee|null>(null)
 
-watch(() => [page.value, storeUtilisateur.utilisateurConnecte, ...storeFavoris.aVoir], async () => {
+watch(() => [props.page, storeUtilisateur.utilisateurConnecte, ...storeFavoris.aVoir], async () => {
     // Lorsque l'on change de page ou que l'utilisateur se déconnecte ou que la liste des favoris change, on déclenche cette fonction de mise à jour.
     // Etant donné que j'ai marqué immediate:true, cette fonction est aussi appelée immédiatement au premier chargement.
-    
+
     if(!storeUtilisateur.utilisateurConnecte) {
         routeur.push({ name: 'Accueil' })
         return
     }
-    
+
     const films = storeFavoris.aVoir;
     listeFilms.value = {
-        page: page.value,
+        page: props.page,
         total_pages: Math.ceil(films.length / filmsParPage),
         total_results: films.length,
-        results: films.slice((page.value - 1) * filmsParPage, page.value * filmsParPage)
+        results: films.slice((props.page - 1) * filmsParPage, props.page * filmsParPage)
     }
 }, { immediate: true })
 
