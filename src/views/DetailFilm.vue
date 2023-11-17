@@ -142,7 +142,7 @@ function basculerFavori () {
     return
   }
   if (storeFavoris.estFavori(infosGeneralesFilm.value)) {
-    storeFavoris.retirerFavori(infosGeneralesFilm.value)
+    storeFavoris.ajouterFavori(infosGeneralesFilm.value)
   } else {
     storeFavoris.ajouterFavori(infosGeneralesFilm.value)
   }
