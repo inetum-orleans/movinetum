@@ -243,15 +243,16 @@ const proprietesIconeAVoir = computed(() => {
       </v-container>
     </v-parallax>
 
-    <!--  On affiche les Credits du films  -->
+    <!--  On affiche la distribution du films (les acteurs)  -->
     <v-container class="mt-16">
       <h2>Distribution</h2>
       <v-slide-group
         center-active
       >
+        <!--  On boucle sur chacun des acteurs présents dans la distribution du film -->
         <v-slide-group-item
-          v-for="(value, index) in film.credits.cast"
-          :key="index"
+          v-for="acteur in film.credits.cast"
+          :key="acteur.id"
           v-slot="{ toggle }"
         >
           <v-card
@@ -259,17 +260,20 @@ const proprietesIconeAVoir = computed(() => {
             @click="toggle"
             width="138"
           >
+            <!--  On affiche la photo de l'acteur  -->
             <v-img
               class="align-end text-white"
-              :src="value?.profile_path ? urlCreditImage + value?.profile_path : 'https://placehold.co/138x175?text=❌'"
+              :src="acteur?.profile_path ? urlCreditImage + acteur?.profile_path : 'https://placehold.co/138x175?text=❌'"
               width="138"
               height="175"
               cover
             >
             </v-img>
             <v-card-text>
-              <h3>{{ value.name }}</h3>
-              <div>{{ value.original_name }}</div>
+              <!--  Nom de l'acteur  -->
+              <h3>{{ acteur.name }}</h3>
+              <!--  Nom du personnage joué par l'acteur  -->
+              <div>{{ acteur.name }}</div>
             </v-card-text>
           </v-card>
         </v-slide-group-item>
@@ -282,11 +286,11 @@ const proprietesIconeAVoir = computed(() => {
         center-active
       >
         <v-slide-group-item
-          v-for="(value, index) in film.recommendations.results"
-          :key="index"
+          v-for="recommendation in film.recommendations.results"
+          :key="recommendation.id"
         >
           <div class="pa-2" style="width:200px">
-            <carte-film :film="(value as Movie)" />
+            <carte-film :film="(recommendation as Movie)" />
           </div>
         </v-slide-group-item>
       </v-slide-group>

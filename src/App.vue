@@ -1,6 +1,6 @@
 <script lang="ts" setup>
   // Le composant principal de l'application
-  
+
   import { ref } from 'vue';
   import { useRouter } from 'vue-router'
   import { useUtilisateursStore } from './store/utilisateurs'
@@ -72,3 +72,8 @@
     </v-main>
   </v-app>
 </template>
+
+<style scoped>
+/* Ajouter des règles CSS ici */
+
+</style>
