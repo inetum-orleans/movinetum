@@ -8,13 +8,15 @@ Il faut avoir installé les outils suivants :
 
 Une fois ces outils installés, ouvrir le logiciel "Visual Studio Code", et aller ouvrir le dossier du projet ("File/Open Folder").
 
-_TODO: Mettre une capture d'écran pour présenter les différentes zones du logiciel_
+![Le bouton pour ouvrir un dossier est en haut à gauche, en cliquant sur "File", puis sur "Open Folder..."](doc/images/vs-code-open-folder.png)
 
 Au premier démarrage, il faut installer les "dépendances" du projet, c'est à dire des "briques" toutes faites, fournies par la communauté des développeurs, qui vont nous permettre de construire notre application, à la manière de LEGO®. Pour cela, il faut ouvrir un "Terminal" en cliquant dans le menu "Terminal/New Terminal", et taper la commande suivante :
 
 ```bash
 npm install
 ```
+
+![Un message indique que les dépendances ont été ajoutées](doc/images/terminal-npm-install.png)
 
 NOTE: Pour valider une commande, il faut appuyer sur la touche "Entrée" du clavier.
 
