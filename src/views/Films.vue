@@ -8,9 +8,12 @@ import { inject, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import ListeFilms from '@/components/ListeFilms.vue'
 import { ListeFilmsPaginee } from '@/types/interfaces'
+import { useTMDBConfigurationStore } from '@/store/tmdb-configuration'
 
 // Le routeur, qui permet de naviguer vers une autre page via du code javascript
 const routeur = useRouter()
+
+const storeTMDBConfiguration = useTMDBConfigurationStore()
 
 // On récupère le client TMDB depuis le conteneur d'injection de dépendances (voir la ligne "app.provide" dans src/main.ts)
 const tmdb = inject(symboleTmdb)!
@@ -22,7 +25,7 @@ const props = defineProps<{
 
 // La liste des films à afficher. Initialisée à la valeur spéciale "null" pour indiquer que l'on est en cours de chargement.
 // Une fois la liste chargée, la valeur est initialisée à la liste des films.
-const listeFilms = ref<ListeFilmsPaginee|null>(null)
+const listeFilms = ref<ListeFilmsPaginee | null>(null)
 
 // La fonction watch permet de surveiller les changements de la variable page
 watch(() => props.page, async () => {
@@ -42,10 +45,100 @@ watch(() => props.page, async () => {
  * Cette fonction est appelée lorsqu'on change de page via le composant de pagination
  */
 function changementPage(numPage: number) {
-    routeur.push({ name: 'Films', params: { page: numPage }})
+    routeur.push({ name: 'Films', params: { page: numPage } })
 }
 </script>
 
 <template>
-    <liste-films :films="listeFilms" @changementPage="changementPage" />
+    <v-row>
+        <!-- 2.1 Séparer la page en 2 colonnes -->
+        <!-- <v-col :cols="2">
+            Ici seront les filtres, cette phrase est suffisament longue pour être sur 2 lignes sans passer par dessus les affiches des films
+        </v-col>
+        <v-col :cols="10">
+            <liste-films :films="listeFilms" @changementPage="changementPage" />
+        </v-col> -->
+
+        <!-- 2.2 Ajouter un cadre -->
+        <!-- <v-col :cols="2">
+            <v-card :minHeight="600" class="ml-4 mt-4">
+                <v-card-title class="mt-2 mb-4">
+                    Filtrer
+                </v-card-title>
+                <v-card-text>
+                    Ici seront les filtres
+                </v-card-text>
+            </v-card>
+        </v-col>
+        <v-col :cols="10">
+            <liste-films :films="listeFilms" @changementPage="changementPage" />
+        </v-col>-->
+
+        <!-- 2.3 Ajouter une icône -->
+        <!-- <v-col :cols="2">
+            <v-card :minHeight="600" class="ml-4 mt-4">
+                <v-card-title class="mt-2 mb-4">
+                    <v-icon>mdi-filter-outline</v-icon>
+                    Filtrer
+                </v-card-title>
+                <v-card-text>
+                    Ici seront les filtres
+                </v-card-text>
+            </v-card>
+        </v-col>
+        <v-col :cols="10">
+            <liste-films :films="listeFilms" @changementPage="changementPage" />
+        </v-col>-->
+
+        <!-- 2.4 Ajouter les boutons pour filtrer -->
+        <!-- <v-col :cols="2">
+            <v-card :minHeight="600" class="ml-4 mt-4">
+                <v-card-title class="mt-2 mb-4">
+                    <v-icon>mdi-filter-outline</v-icon>
+                    Filtrer
+                </v-card-title>
+                <v-card-text>
+                    <v-btn
+                        v-for="i in 12"
+                        class="mx-1 my-1 prop-button px-2"
+                        elevation="2">
+                        Prop {{ i }}
+                    </v-btn>
+                </v-card-text>
+            </v-card>
+        </v-col>
+        <v-col :cols="10">
+            <liste-films :films="listeFilms" @changementPage="changementPage" />
+        </v-col> -->
+
+        <!-- 2.5 Afficher les genres depuis l'API -->
+        <v-col :cols="2">
+            <v-card class="ml-4 mt-4">
+                <v-card-title class="mt-2 mb-4">
+                    <v-icon>mdi-filter-outline</v-icon>
+                    Filtrer
+                </v-card-title>
+                <v-card-subtitle>
+                    Genres
+                </v-card-subtitle>
+                <v-card-text>
+                    <v-btn v-for="genre in storeTMDBConfiguration.genres" class="mx-1 my-1 prop-button px-2" elevation="2">
+                        {{ genre }}
+                    </v-btn>
+                </v-card-text>
+            </v-card>
+        </v-col>
+        <v-col :cols="10">
+            <liste-films :films="listeFilms" @changementPage="changementPage" />
+        </v-col>
+    </v-row>
+
+    <!-- letter-spacing à enlever sur les v-btn-->
 </template>
+
+<!-- 2.4 Ajouter les boutons pour filtrer -->
+<style>
+.prop-button {
+    border: thin solid #CCCCCC;
+}
+</style>

@@ -1,7 +1,7 @@
 import { symboleTmdb } from '@/types/symboles'
 import { defineStore } from 'pinia'
 import { Configuration } from 'tmdb-ts'
-import { inject, ref } from 'vue'
+import { inject, readonly, ref } from 'vue'
 
 export const useTMDBConfigurationStore = defineStore('tmdb-configuration', () => {
     // On récupère le client TMDB depuis le conteneur d'injection de dépendances (voir la ligne "app.provide" dans src/main.ts)
@@ -64,6 +64,7 @@ export const useTMDBConfigurationStore = defineStore('tmdb-configuration', () =>
     }
 
     return {
+        genres: readonly(genres),
         traduireGenre,
         calculerCheminsImagePoster
     }
