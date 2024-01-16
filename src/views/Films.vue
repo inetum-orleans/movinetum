@@ -9,6 +9,7 @@ import { useRouter } from 'vue-router'
 import ListeFilms from '@/components/ListeFilms.vue'
 import { ListeFilmsPaginee } from '@/types/interfaces'
 import { useTMDBConfigurationStore } from '@/store/tmdb-configuration'
+import { computed } from 'vue'
 
 // Le routeur, qui permet de naviguer vers une autre page via du code javascript
 const routeur = useRouter()
@@ -26,6 +27,10 @@ const props = defineProps<{
 // La liste des films à afficher. Initialisée à la valeur spéciale "null" pour indiquer que l'on est en cours de chargement.
 // Une fois la liste chargée, la valeur est initialisée à la liste des films.
 const listeFilms = ref<ListeFilmsPaginee | null>(null)
+
+// 2.6 Stocker le résultat des clicks sur les boutons
+// La liste des genres sélectionnés par l'utilisateur
+const listeGenresFiltres = ref<number[]>([])
 
 // La fonction watch permet de surveiller les changements de la variable page
 watch(() => props.page, async () => {
@@ -47,6 +52,28 @@ watch(() => props.page, async () => {
 function changementPage(numPage: number) {
     routeur.push({ name: 'Films', params: { page: numPage } })
 }
+
+// 2.6 Stocker le résultat des clicks sur les boutons
+function majListeGenresFiltres(id: number) {
+    if (listeGenresFiltres.value.includes(id)) {
+        listeGenresFiltres.value = listeGenresFiltres.value.filter(x => x !== id)
+    } else {
+        listeGenresFiltres.value.push(id);
+    }
+}
+
+// 2.7 Filtrer les films en fonction de la liste des genres sélectionnés
+const listeFilmsFiltres = computed(() => {
+    if (listeFilms.value === null || listeGenresFiltres.value.length === 0) return listeFilms.value
+
+    const genresFiltres = listeGenresFiltres.value.map(Number)
+    const toReturn: ListeFilmsPaginee = JSON.parse(JSON.stringify(listeFilms.value))
+
+    // Retourner les films qui contiennent tous les genres de la liste "genresFiltres"
+    toReturn.results = toReturn.results.filter(film => genresFiltres.every(genre => film.genre_ids.includes(genre)))
+
+    return toReturn
+})
 </script>
 
 <template>
@@ -98,10 +125,7 @@ function changementPage(numPage: number) {
                     Filtrer
                 </v-card-title>
                 <v-card-text>
-                    <v-btn
-                        v-for="i in 12"
-                        class="mx-1 my-1 prop-button px-2"
-                        elevation="2">
+                    <v-btn v-for="i in 24" class="mx-1 my-1 prop-button px-2" elevation="2">
                         Prop {{ i }}
                     </v-btn>
                 </v-card-text>
@@ -112,6 +136,51 @@ function changementPage(numPage: number) {
         </v-col> -->
 
         <!-- 2.5 Afficher les genres depuis l'API -->
+        <!-- <v-col :cols="2">
+        <v-card class="ml-4 mt-4">
+          <v-card-title class="mt-2 mb-4">
+            <v-icon>mdi-filter-outline</v-icon>
+            Filtrer
+          </v-card-title>
+          <v-card-subtitle>
+            Genres
+          </v-card-subtitle>
+          <v-card-text>
+            <v-btn v-for="genre in storeTMDBConfiguration.genres" class="mx-1 my-1 prop-button px-2"
+                   elevation="2">
+              {{ genre }}
+            </v-btn>
+          </v-card-text>
+        </v-card>
+      </v-col>
+      <v-col :cols="10">
+        <liste-films :films="listeFilms" @changementPage="changementPage" />
+      </v-col> -->
+
+        <!-- 2.6 Stocker le résultat des clicks sur les boutons -->
+<!--        <v-col :cols="2">
+            <v-card class="ml-4 mt-4">
+                <v-card-title class="mt-2 mb-4">
+                    <v-icon>mdi-filter-outline</v-icon>
+                    Filtrer
+                </v-card-title>
+                <v-card-subtitle>
+                    Genres
+                </v-card-subtitle>
+                <v-card-text>
+                    <v-btn v-for="(genre, index) in storeTMDBConfiguration.genres" class="mx-1 my-1 prop-button px-2"
+                        elevation="2" @click="majListeGenresFiltres(index)"
+                        :color="listeGenresFiltres.includes(index) ? 'primary' : ''">
+                        {{ genre }}
+                    </v-btn>
+                </v-card-text>
+            </v-card>
+        </v-col>
+        <v-col :cols="10">
+            <liste-films :films="listeFilms" @changementPage="changementPage" />
+        </v-col>-->
+
+        <!-- 2.7.	Filtrer les films en fonction de la liste des genres sélectionnés -->
         <v-col :cols="2">
             <v-card class="ml-4 mt-4">
                 <v-card-title class="mt-2 mb-4">
@@ -122,14 +191,16 @@ function changementPage(numPage: number) {
                     Genres
                 </v-card-subtitle>
                 <v-card-text>
-                    <v-btn v-for="genre in storeTMDBConfiguration.genres" class="mx-1 my-1 prop-button px-2" elevation="2">
+                    <v-btn v-for="(genre, index) in storeTMDBConfiguration.genres" class="mx-1 my-1 prop-button px-2"
+                        elevation="2" @click="majListeGenresFiltres(index)"
+                        :color="listeGenresFiltres.includes(index) ? 'primary' : ''">
                         {{ genre }}
                     </v-btn>
                 </v-card-text>
             </v-card>
         </v-col>
         <v-col :cols="10">
-            <liste-films :films="listeFilms" @changementPage="changementPage" />
+            <liste-films :films="listeFilmsFiltres" @changementPage="changementPage" />
         </v-col>
     </v-row>
 
