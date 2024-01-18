@@ -66,11 +66,10 @@ function majListeGenresFiltres(id: number) {
 const listeFilmsFiltres = computed(() => {
     if (listeFilms.value === null || listeGenresFiltres.value.length === 0) return listeFilms.value
 
-    const genresFiltres = listeGenresFiltres.value.map(Number)
     const toReturn: ListeFilmsPaginee = JSON.parse(JSON.stringify(listeFilms.value))
 
     // Retourner les films qui contiennent tous les genres de la liste "genresFiltres"
-    toReturn.results = toReturn.results.filter(film => genresFiltres.every(genre => film.genre_ids.includes(genre)))
+    toReturn.results = toReturn.results.filter(film => listeGenresFiltres.value.every(genre => film.genre_ids.includes(genre)))
 
     return toReturn
 })
@@ -125,7 +124,7 @@ const listeFilmsFiltres = computed(() => {
                     Filtrer
                 </v-card-title>
                 <v-card-text>
-                    <v-btn v-for="i in 24" class="mx-1 my-1 prop-button px-2" elevation="2">
+                    <v-btn v-for="i in 24" class="mx-1 my-1 prop-button px-2" elevation="2" :key="i">
                         Prop {{ i }}
                     </v-btn>
                 </v-card-text>
@@ -146,8 +145,8 @@ const listeFilmsFiltres = computed(() => {
             Genres
           </v-card-subtitle>
           <v-card-text>
-            <v-btn v-for="genre in storeTMDBConfiguration.genres" class="mx-1 my-1 prop-button px-2"
-                   elevation="2">
+            <v-btn v-for="[index, genre] in storeTMDBConfiguration.genres" class="mx-1 my-1 prop-button px-2"
+                   elevation="2" :key="index">
               {{ genre }}
             </v-btn>
           </v-card-text>
@@ -158,7 +157,7 @@ const listeFilmsFiltres = computed(() => {
       </v-col> -->
 
         <!-- 2.6 Stocker le résultat des clicks sur les boutons -->
-<!--        <v-col :cols="2">
+        <!--        <v-col :cols="2">
             <v-card class="ml-4 mt-4">
                 <v-card-title class="mt-2 mb-4">
                     <v-icon>mdi-filter-outline</v-icon>
@@ -168,8 +167,8 @@ const listeFilmsFiltres = computed(() => {
                     Genres
                 </v-card-subtitle>
                 <v-card-text>
-                    <v-btn v-for="(genre, index) in storeTMDBConfiguration.genres" class="mx-1 my-1 prop-button px-2"
-                        elevation="2" @click="majListeGenresFiltres(index)"
+                    <v-btn v-for="[index, genre] in storeTMDBConfiguration.genres" class="mx-1 my-1 prop-button px-2"
+                        elevation="2" @click="majListeGenresFiltres(index)" :key="index"
                         :color="listeGenresFiltres.includes(index) ? 'primary' : ''">
                         {{ genre }}
                     </v-btn>
@@ -191,8 +190,8 @@ const listeFilmsFiltres = computed(() => {
                     Genres
                 </v-card-subtitle>
                 <v-card-text>
-                    <v-btn v-for="(genre, index) in storeTMDBConfiguration.genres" class="mx-1 my-1 prop-button px-2"
-                        elevation="2" @click="majListeGenresFiltres(index)"
+                    <v-btn v-for="[index, genre] in storeTMDBConfiguration.genres" class="mx-1 my-1 prop-button px-2"
+                        elevation="2" @click="majListeGenresFiltres(index)" :key="index"
                         :color="listeGenresFiltres.includes(index) ? 'primary' : ''">
                         {{ genre }}
                     </v-btn>
