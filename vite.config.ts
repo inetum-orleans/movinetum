@@ -13,7 +13,7 @@ export default defineConfig({
     vue({
       template: { transformAssetUrls }
     }),
-    // https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vite-plugin
+    // https://github.com/vuetifyjs/vuetify-loader/tree/master/packages/vite-plugin
     vuetify({
       autoImport: true,
     }),
@@ -27,6 +27,9 @@ export default defineConfig({
     }),
   ],
   define: { 'process.env': {} },
+  optimizeDeps: {
+    entries: ['./src/views/*.vue'],
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
