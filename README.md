@@ -3,7 +3,7 @@
 ## Installation de l'environnement de développement
 
 Il faut avoir installé les outils suivants :
-- [Node.js version 18](https://nodejs.org/fr). Il s'agit d'un environnement d'exécution JavaScript, qui nous sert à compiler et lancer l'application sur notre machine.
+- [Node.js version 20 (LTS) ou 22](https://nodejs.org/fr). Il s'agit d'un environnement d'exécution JavaScript, qui nous sert à compiler et lancer l'application sur notre machine.
 - [Visual Studio Code](https://code.visualstudio.com/). C'est l'outil de développement que nous utilisons pour écrire le code de l'application.
 
 Une fois ces outils installés, ouvrir le logiciel "Visual Studio Code", et aller ouvrir le dossier du projet ("File/Open Folder").
