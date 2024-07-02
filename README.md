@@ -31,8 +31,8 @@ npm run dev
 
 Lorsque l'application est prête, un message s'affiche dans le terminal, comme sur l'image ci-dessous:
 
-![Un message indique l'URL Local: http://localhost:3000/](doc/images/vite-terminal-ready.png)
+![Un message indique l'URL Local: http://localhost:3002/](doc/images/vite-terminal-ready.png)
 
-Ouvrir un navigateur web, et aller à l'adresse indiquée dans le terminal (http://localhost:3000/). L'application s'affiche.
+Ouvrir un navigateur web, et aller à l'adresse indiquée dans le terminal (http://localhost:3002/). L'application s'affiche.
 
 NOTE: Pour arrêter l'application, il faut appuyer sur les touches "Ctrl" et "C" du clavier.

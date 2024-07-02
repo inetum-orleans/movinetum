@@ -7,7 +7,7 @@ import { RouteRecordRaw, createRouter, createWebHistory } from 'vue-router'
 // Dans ce tableau, je déclare les différentes routes, c'est à dire pour un "path" donné, quel composant afficher
 const routes: RouteRecordRaw[] = [
   {
-    path: '/',// Ce chemin correspond à la racine du site. C'est ce qui est exécuté lorsque l'on arrive sur l'adresse du site (http://localhost:3000/).
+    path: '/',// Ce chemin correspond à la racine du site. C'est ce qui est exécuté lorsque l'on arrive sur l'adresse du site (http://localhost:3002/).
     name: 'Accueil',// On donne un nom à la route, cela permet de l'utiliser plus facilement dans le code.
     redirect: '/films/1'// Cette route redirige vers la route "/films/1". C'est à dire que lorsque l'on arrive sur la racine du site, on est redirigé vers la première page de la liste des films.
   },
