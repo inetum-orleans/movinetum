@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@mdi/font": "^7.4",
-    "@vueuse/components": "^10.11.0",
+    "@vueuse/components": "^11.0.3",
     "@vueuse/core": "^10.11.0",
     "pinia": "^2.2.0",
     "tmdb-ts": "^1.6.1",
