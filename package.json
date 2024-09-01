@@ -26,7 +26,7 @@
     "eslint": "^8.22.0",
     "eslint-plugin-vue": "^9.27.0",
     "sass": "^1.77.0",
-    "sass-loader": "^14.2.1",
+    "sass-loader": "^16.0.1",
     "typescript": "^5.4",
     "unplugin-fonts": "^1.0.3",
     "vite": "^5",
