@@ -12,7 +12,7 @@ export const useTMDBConfigurationStore = defineStore('tmdb-configuration', () =>
 
     async function chargerConfiguration() {
         // On récupère la configuration depuis l'API TMDB
-        configuration.value = await tmdb.configuration.getCurrent()
+        configuration.value = await tmdb.configuration.getApiConfiguration()
 
         // On récupère les genres depuis l'API TMDB
         const genresFilms = await tmdb.genres.movies({ language: 'fr-FR' })
