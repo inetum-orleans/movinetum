@@ -10,21 +10,21 @@
   },
   "dependencies": {
     "@mdi/font": "^7.4",
-    "@vueuse/components": "^13.6.0",
+    "@vueuse/components": "^13.9.0",
     "@vueuse/core": "^13.1.0",
     "pinia": "^3.0.3",
-    "tmdb-ts": "^2.0.1",
-    "vue": "^3.5.18",
+    "tmdb-ts": "^2.0.2",
+    "vue": "^3.5.22",
     "vue-router": "^4.5.1",
-    "vuetify": "^3.9.3"
+    "vuetify": "^3.10.3"
   },
   "devDependencies": {
     "@babel/types": "^7.27.0",
-    "@types/node": "^24.1.0",
+    "@types/node": "^24.6.1",
     "@vitejs/plugin-vue": "^6",
     "@vue/eslint-config-typescript": "^14.6.0",
-    "eslint": "^9.32.0",
-    "sass": "^1.89.2",
+    "eslint": "^9.36.0",
+    "sass": "^1.93.2",
     "sass-loader": "^16.0.5",
     "typescript": "^5.9",
     "unplugin-fonts": "^1.4.0",
