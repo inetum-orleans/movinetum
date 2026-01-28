@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, ComponentPublicInstance } from 'vue'
 import { useUtilisateursStore, Utilisateur } from '@/store/utilisateurs'
-import { SubmitEventPromise } from 'vuetify/lib/framework.mjs'
+import { SubmitEventPromise } from 'vuetify/lib/framework'
 import { useRouter } from 'vue-router'
-import { VForm } from 'vuetify/lib/components/index.mjs'
+import { VForm } from 'vuetify/lib/components/index'
 
 // La page d'inscription
 
